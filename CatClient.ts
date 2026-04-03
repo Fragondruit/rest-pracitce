@@ -1,15 +1,14 @@
 import { GenerateImagesResponse, GoogleGenAI } from "@google/genai";
 
 class CatClient {
-  private static readonly BASE_URL: string = "https://meowfacts.herokuapp.com/";
-  private static readonly GEMINI_API_KEY: string = "AIzaSyAiayTKb72__ltkPq9THmDsYAG7bSuiiKw";
-  private static readonly GOOGLE_MODEL_NAME: "gemini-3.1-flash-image-preview";
+  private static readonly BASE_URL: string = "https://meowfacts.herokuapp.com";
+  private static readonly GOOGLE_MODEL_NAME: string = "gemini-3.1-flash-image-preview";
 
   private static s_geminiClient: GoogleGenAI;
 
   static {
     this.s_geminiClient = new GoogleGenAI({
-      apiKey: CatClient.GEMINI_API_KEY,
+      apiKey: require(".env.json").geminiApiKey,
     });
   }
 
@@ -23,14 +22,14 @@ class CatClient {
     });
   }
 
-  static getFact() {
-    this.getBulkFacts(1);
+  static getFact(): Promise<string> {
+    return this.getBulkFacts(1).then((data) => data[0]);
   }
 
-  static getBulkFacts(pageSize: number) {
-    this.queryGet(pageSize)
+  static getBulkFacts(pageSize: number): Promise<string[]> {
+    return this.queryGet(pageSize)
         .then((response) => response.json())
-        .then((data) => console.log(data.data));
+        .then((data) => data?.data ?? []);
   }
 
   static getFactWithImage() {
@@ -40,10 +39,13 @@ class CatClient {
         .catch((error) => console.error(error));
   }
 
-  private static getImage(prompt: string): Promise<GenerateImagesResponse> {
+  static getImage(prompt: string): Promise<GenerateImagesResponse> {
+    this.s_geminiClient.models.list().then(console.log);
     return this.s_geminiClient.models.generateImages({
       model: this.GOOGLE_MODEL_NAME,
       prompt: prompt,
     });
   }
 }
+
+export default CatClient;
