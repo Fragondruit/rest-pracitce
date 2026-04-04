@@ -8,7 +8,7 @@ class CatClient {
 
   static {
     this.s_geminiClient = new GoogleGenAI({
-      apiKey: require(".env.json").geminiApiKey,
+      apiKey: require("./.env.json").geminiApiKey,
     });
   }
 
