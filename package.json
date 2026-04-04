@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@google/genai": "^1.48.0",
     "node-ts": "^8.0.11"
   }
 }
